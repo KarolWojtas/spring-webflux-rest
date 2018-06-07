@@ -1,6 +1,5 @@
 package guru.springframework.domain;
 
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -9,14 +8,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document(collection="category_shop")
 @Data
+@Document
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Category {
+public class Vendor {
 	@Id
 	private String id;
-	private String description;
+	private String firstName;
+	private String lastName;
+	
 
 }
