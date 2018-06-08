@@ -1,5 +1,6 @@
 package guru.springframework.bootstrap;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ public class DomainBootstrap implements ApplicationListener<ContextRefreshedEven
 	@Profile("dev")
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		vendorRepository.count().filter(count -> count > 0).subscribe(count -> {
+			
 			vendorRepository.deleteAll().block();
 			categoryRepository.deleteAll().block();
 		});
@@ -56,7 +58,8 @@ public class DomainBootstrap implements ApplicationListener<ContextRefreshedEven
 						.description("Cats")
 						.build()
 				)).blockFirst();
-		System.out.println(vendorRepository.count().block().toString()+" elementów");
+		System.out.println(vendorRepository.count().block().toString()+" vendor");
+		System.out.println(categoryRepository.count().block().toString()+" category");
 		
 		
 	}
