@@ -4,6 +4,7 @@ import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +17,7 @@ import guru.springframework.domain.Category;
 import guru.springframework.repositories.CategoryRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 @RestController
 @RequestMapping("/api/category/")
@@ -47,5 +49,16 @@ public class CategoryController {
 			return category;
 		})).single();
 		
+	}
+	@PatchMapping("{id}")
+	Mono<Category> patchCategory(@PathVariable String id, @RequestBody Mono<Category> categoryMono){
+		 Mono<Category> categoryStored = categoryRepository.findById(id);
+		return categoryRepository.saveAll(categoryStored.map(cat -> {
+			if(!categoryMono.block().getDescription().equals(null)) {
+				cat.setDescription(categoryMono.block().getDescription());
+			}
+			return cat;
+		})).single();
+		 //return Mono.just(Category.builder().description("Dupa").build());
 	}
 }

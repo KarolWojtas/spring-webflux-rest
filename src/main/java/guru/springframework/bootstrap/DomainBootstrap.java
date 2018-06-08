@@ -35,35 +35,40 @@ public class DomainBootstrap implements ApplicationListener<ContextRefreshedEven
 			
 			vendorRepository.deleteAll().block();
 			categoryRepository.deleteAll().block();
+			
+			bootstrap();
 		});
 	
-		vendorRepository.saveAll(Arrays.asList(
-					Vendor.builder()
-						.firstName("Apple")
-						.lastName("Inc")
-						.build(),
-					Vendor.builder()
-						.firstName("Sony")
-						.lastName("Company")
-						.build()
-				)).blockFirst();
-		categoryRepository.saveAll(Arrays.asList(
-					Category.builder()
-						.description("Notebooks")
-						.build(),
-					Category.builder()
-						.description("Books")
-						.build(),
-					Category.builder()
-						.description("Cats")
-						.build()
-				)).blockFirst();
-		System.out.println(vendorRepository.count().block().toString()+" vendor");
-		System.out.println(categoryRepository.count().block().toString()+" category");
+		
+		
 		
 		
 	}
-	
+	private void bootstrap() {
+		vendorRepository.saveAll(Arrays.asList(
+				Vendor.builder()
+					.firstName("Apple")
+					.lastName("Inc")
+					.build(),
+				Vendor.builder()
+					.firstName("Sony")
+					.lastName("Company")
+					.build()
+			)).blockFirst();
+	categoryRepository.saveAll(Arrays.asList(
+				Category.builder()
+					.description("Notebooks")
+					.build(),
+				Category.builder()
+					.description("Books")
+					.build(),
+				Category.builder()
+					.description("Cats")
+					.build()
+			)).blockFirst();
+	System.out.println(vendorRepository.count().block().toString()+" vendor");
+	System.out.println(categoryRepository.count().block().toString()+" category");
+	}
 
 	
 

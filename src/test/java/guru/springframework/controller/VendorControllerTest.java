@@ -6,9 +6,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+import org.reactivestreams.Publisher;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import guru.springframework.domain.Category;
 import guru.springframework.domain.Vendor;
 import guru.springframework.repositories.VendorRepository;
 import reactor.core.publisher.Flux;
@@ -50,6 +52,31 @@ public class VendorControllerTest {
 						.consumeWith(response -> {
 							assertEquals(new Vendor(), response.getResponseBody());
 						});
+	}
+	@Test
+	public void createNewvendor() {
+		BDDMockito.given(repository.saveAll(Mockito.any(Publisher.class)))
+			.willReturn(Flux.empty());
+		
+		testClient.post().uri("/api/vendor/").contentType(MediaType.APPLICATION_JSON)
+							.body(Mono.just(new Vendor()), Vendor.class)
+							.exchange()
+								.expectStatus().isCreated();
+					
+		
+	}
+	@Test
+	public void updateCategory() {
+		BDDMockito.given(repository.saveAll(Mockito.any(Publisher.class))).willReturn(Flux.just(new Vendor()));
+		
+		testClient.put().uri("/api/vendor/1")
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(Mono.just(new Vendor()), Vendor.class)
+			.exchange()
+				.expectStatus().isOk()
+				.expectBody(Vendor.class);
+				
+			
 	}
 
 }

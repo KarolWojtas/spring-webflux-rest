@@ -20,6 +20,7 @@ import guru.springframework.repositories.CategoryRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+
 public class CategoryControllerTest {
 	private WebTestClient client;
 	private CategoryRepository repository;
@@ -76,6 +77,24 @@ public class CategoryControllerTest {
 		client.put().uri("/api/category/1")
 			.contentType(MediaType.APPLICATION_JSON)
 			.body(Mono.just(new Category()), Category.class)
+			.exchange()
+				.expectStatus().isOk()
+				.expectBody(Category.class);
+				
+			
+	}
+	@Test
+	public void patchCategory() {
+		BDDMockito.given(repository.saveAll(Mockito.any(Publisher.class))).willReturn(Flux.just(
+					Category.builder().description("Yhm").build()
+				));
+		BDDMockito.given(repository.findById(Mockito.anyString())).willReturn(
+					Mono.just(Category.builder().id("1").description("Jap").build())
+				);
+		
+		client.patch().uri("/api/category/1")
+			
+			.body(Mono.just(Category.builder().description("Nuda").build()), Category.class)
 			.exchange()
 				.expectStatus().isOk()
 				.expectBody(Category.class);

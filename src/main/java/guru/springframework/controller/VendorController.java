@@ -1,10 +1,16 @@
 package guru.springframework.controller;
 
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import guru.springframework.domain.Vendor;
@@ -28,5 +34,19 @@ public class VendorController {
 	@GetMapping("{id}")
 	public Mono<Vendor> findVendorbyId(@PathVariable String id){
 		return repository.findById(id);
+	}
+	@PostMapping
+	@ResponseStatus(code=HttpStatus.CREATED)
+	public Mono<Void> createNewVendor(@RequestBody Publisher<Vendor> vendorStream){
+		return repository.saveAll(vendorStream).then();
+	}
+	@PutMapping("{id}")
+	public Mono<Vendor> updateVendorbyId(@PathVariable String id, @RequestBody Publisher<Vendor> vendorStream){
+		return repository.saveAll(Flux.from(vendorStream)
+				.map(vendor -> {
+					vendor.setId(id);
+					return vendor;
+				})).single();
+				
 	}
 }
