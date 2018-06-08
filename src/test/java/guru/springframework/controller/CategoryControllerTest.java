@@ -3,6 +3,7 @@ package guru.springframework.controller;
 import static org.hamcrest.CoreMatchers.any;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -67,6 +68,19 @@ public class CategoryControllerTest {
 						.exchange()
 							.expectStatus().isCreated();
 						
+	}
+	@Test
+	public void updateCategory() {
+		BDDMockito.given(repository.saveAll(Mockito.any(Publisher.class))).willReturn(Flux.just(new Category()));
+		
+		client.put().uri("/api/category/1")
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(Mono.just(new Category()), Category.class)
+			.exchange()
+				.expectStatus().isOk()
+				.expectBody(Category.class);
+				
+			
 	}
 
 }
