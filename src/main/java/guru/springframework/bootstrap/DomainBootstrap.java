@@ -29,17 +29,16 @@ public class DomainBootstrap implements ApplicationListener<ContextRefreshedEven
 	}
 
 	@Override
-	@Profile("dev")
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		vendorRepository.count().filter(count -> count > 0).subscribe(count -> {
-			
-			vendorRepository.deleteAll().block();
-			categoryRepository.deleteAll().block();
-			
-			bootstrap();
-		});
 	
+	public void onApplicationEvent(ContextRefreshedEvent event) {
 		
+		
+		vendorRepository.deleteAll().block();
+		categoryRepository.deleteAll().block();
+		
+		bootstrap();
+		System.out.println(vendorRepository.count().block().toString()+" vendor");
+		System.out.println(categoryRepository.count().block().toString()+" category");
 		
 		
 		
@@ -66,8 +65,7 @@ public class DomainBootstrap implements ApplicationListener<ContextRefreshedEven
 					.description("Cats")
 					.build()
 			)).blockFirst();
-	System.out.println(vendorRepository.count().block().toString()+" vendor");
-	System.out.println(categoryRepository.count().block().toString()+" category");
+	
 	}
 
 	

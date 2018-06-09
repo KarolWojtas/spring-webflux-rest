@@ -2,6 +2,9 @@ package guru.springframework.controller;
 
 import static org.hamcrest.CoreMatchers.any;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -84,7 +87,7 @@ public class CategoryControllerTest {
 			
 	}
 	@Test
-	public void patchCategory() {
+	public void patchCategoryWithChanges() {
 		BDDMockito.given(repository.saveAll(Mockito.any(Publisher.class))).willReturn(Flux.just(
 					Category.builder().description("Yhm").build()
 				));
@@ -98,8 +101,27 @@ public class CategoryControllerTest {
 			.exchange()
 				.expectStatus().isOk()
 				.expectBody(Category.class);
-				
+		verify(repository, times(1)).saveAll(Mockito.any(Publisher.class));
 			
 	}
+/*	@Test
+	public void patchCategoryWithoutChanges() {
+		BDDMockito.given(repository.saveAll(Mockito.any(Publisher.class))).willReturn(Flux.just(
+					Category.builder().description("Jap").build()
+				));
+		BDDMockito.given(repository.findById(Mockito.anyString())).willReturn(
+					Mono.just(Category.builder().id("1").description("Jap").build())
+				);
+		
+		client.patch().uri("/api/category/1")
+			
+			.body(Mono.just(Category.builder().description("Nuda").build()), Category.class)
+			.exchange()
+				.expectStatus().isOk()
+				.expectBody(Category.class);
+		verify(repository, never()).saveAll(Mockito.any(Publisher.class));
+		
+			
+	}*/
 
 }

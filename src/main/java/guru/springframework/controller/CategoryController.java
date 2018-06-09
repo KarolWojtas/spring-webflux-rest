@@ -1,5 +1,8 @@
 package guru.springframework.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,14 +54,16 @@ public class CategoryController {
 		
 	}
 	@PatchMapping("{id}")
-	Mono<Category> patchCategory(@PathVariable String id, @RequestBody Mono<Category> categoryMono){
+	Mono<Category> patchCategory(@PathVariable String id, @RequestBody Category category){
 		 Mono<Category> categoryStored = categoryRepository.findById(id);
 		return categoryRepository.saveAll(categoryStored.map(cat -> {
-			if(!categoryMono.block().getDescription().equals(null)) {
-				cat.setDescription(categoryMono.block().getDescription());
+			if(!category.getDescription().equals(null) || 
+					cat.getDescription().equals(category.getDescription())) {
+				cat.setDescription(category.getDescription());
 			}
 			return cat;
 		})).single();
 		 //return Mono.just(Category.builder().description("Dupa").build());
 	}
+
 }

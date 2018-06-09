@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import guru.springframework.domain.Category;
 import guru.springframework.domain.Vendor;
 import guru.springframework.repositories.VendorRepository;
 import reactor.core.publisher.Flux;
@@ -48,5 +50,19 @@ public class VendorController {
 					return vendor;
 				})).single();
 				
+	}
+	@PatchMapping("{id}")
+	public Mono<Vendor> patchVendorById(@PathVariable String id, @RequestBody Vendor vendor){
+		Mono<Vendor> vendorSaved = repository.findById(id);
+		vendorSaved.map(cat->{
+			if(!vendor.getFirstName().equals(cat.getFirstName())) {
+				cat.setFirstName(vendor.getFirstName());
+			}
+			if(!vendor.getLastName().equals(vendor.getLastName())) {
+				cat.setLastName(vendor.getLastName());
+			}
+			return cat;
+		});
+		return repository.saveAll(vendorSaved).single();
 	}
 }

@@ -1,14 +1,20 @@
 package guru.springframework.controller;
 
+
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.BDDMockito;
+
 import org.mockito.Mockito;
 import org.reactivestreams.Publisher;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
 
 import guru.springframework.domain.Category;
 import guru.springframework.domain.Vendor;
@@ -77,6 +83,27 @@ public class VendorControllerTest {
 				.expectBody(Vendor.class);
 				
 			
+	}
+	@Test
+	public void testPatch() {
+
+		BDDMockito.given(repository.findById(Mockito.anyString()))
+                .willReturn(Mono.just(Vendor.builder().firstName("Jimmy").build()));
+
+        BDDMockito.given(repository.save(Mockito.any(Vendor.class)))
+                .willReturn(Mono.just(Vendor.builder().build()));
+
+        Mono<Vendor> vendorMonoToUpdate = Mono.just(Vendor.builder().firstName("Jimmy").lastName("!").build());
+
+        testClient.patch()
+                .uri("/api/vendor/1")
+                .body(vendorMonoToUpdate, Vendor.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        verify(repository, times(1)).save(Mockito.any());
+
 	}
 
 }
